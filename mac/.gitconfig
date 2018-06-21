@@ -1,0 +1,15 @@
+[user]
+	email = b4hand@users.sf.net
+	name = Brandon Forehand
+
+[alias]
+	stat = status
+	co = checkout
+[color]
+	ui = true
+[branch]
+	autosetuprebase = always
+[push]
+	default = simple
+[hub]
+	protocol = ssh
