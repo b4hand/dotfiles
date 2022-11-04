@@ -3,20 +3,21 @@
 
 (when (>= emacs-major-version 24)
   (require 'package)
+  ;; As of 2021-10-20 marmalade appears to be down
+  ;; (add-to-list
+  ;;  'package-archives
+  ;;  '("marmalade" . "http://marmalade-repo.org/packages/"))
   (add-to-list
    'package-archives
-   '("marmalade" . "http://marmalade-repo.org/packages/"))
-  (add-to-list
-   'package-archives
-   '("org" . "http://orgmode.org/elpa/")
+   '("org" . "https://orgmode.org/elpa/")
    t)
   (add-to-list
    'package-archives
-   '("melpa" . "http://melpa.org/packages/")
+   '("melpa" . "https://melpa.org/packages/")
    t)
   (add-to-list
    'package-archives
-   '("melpa-stable" . "http://stable.melpa.org/packages/")
+   '("melpa-stable" . "https://stable.melpa.org/packages/")
    t)
   (package-initialize)
   (when (not package-archive-contents)
@@ -33,18 +34,42 @@
   :ensure t
   :pin melpa-stable)
 
+(use-package projectile :ensure t)
+(use-package yasnippet :ensure t)
+(use-package lsp-mode :ensure t)
+(use-package hydra :ensure t)
+(use-package company-lsp :ensure t)
+(use-package lsp-ui :ensure t)
+(use-package lsp-java :ensure t :after lsp
+  :config (add-hook 'java-mode-hook 'lsp))
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+
+(require 'ido)
+(ido-mode t)
+
 ;; -----------------------------------------------------------------------------
 ;; Git support
 ;; -----------------------------------------------------------------------------
-(load "git")
-(load "git-blame")
+(use-package magit
+  :ensure t)
+(use-package git-blamed
+  :ensure t)
 (add-to-list 'vc-handled-backends 'GIT)
+
+(use-package go-mode
+  :ensure t)
+
+(use-package graphviz-dot-mode
+  :ensure t)
+
+(use-package terraform-mode :ensure t)
 
 ;; Enable auto spell checking everywhere
 ;; (add-hook 'text-mode-hook 'flyspell-mode)
 ;; (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
-(global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-x C-n") 'next-error)
 (global-set-key (kbd "C-x C-p") 'previous-error)
 
@@ -67,12 +92,43 @@
 
 (require 'cc-mode)
 
-;; Enable ggtags-mode for supported languages
-(add-hook
- 'c-mode-common-hook
- (lambda ()
-   (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
-     (ggtags-mode 1))))
+;; ;; Enable ggtags-mode for supported languages
+;; (add-hook
+;;  'prog-mode-hook
+;;  (lambda ()
+;;    (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'python-mode 'ruby-mode)
+;;      (ggtags-mode 1))))
+
+(defun un-camelcase-word-at-point ()
+  "un-camelcase the word at point, replacing uppercase chars with
+the lowercase version preceded by an underscore.
+The first char, if capitalized (eg, PascalCase) is just
+downcased, no preceding underscore.
+"
+  (interactive)
+  (save-excursion
+    (let ((bounds (bounds-of-thing-at-point 'word)))
+      (replace-regexp "\\([A-Z]\\)" "_\\1" nil
+                      (1+ (car bounds)) (cdr bounds))
+      (downcase-region (car bounds) (cdr bounds)))))
+
+(defun my-increment-number-decimal (&optional arg)
+  "Increment the number forward from point by 'arg'."
+  (interactive "p*")
+  (save-excursion
+    (save-match-data
+      (let (inc-by field-width answer)
+        (setq inc-by (if arg arg 1))
+        (skip-chars-backward "0123456789")
+        (when (re-search-forward "[0-9]+" nil t)
+          (setq field-width (- (match-end 0) (match-beginning 0)))
+          (setq answer (+ (string-to-number (match-string 0) 10) inc-by))
+          (when (< answer 0)
+            (setq answer (+ (expt 10 field-width) answer)))
+          (replace-match (format (concat "%0" (int-to-string field-width) "d")
+                                 answer)))))))
+
+(global-set-key (kbd "C-c +") 'my-increment-number-decimal)
 
 ;; Lines up cascaded method calls
 (defun my-java-lineup-cascaded-calls (langelem)
@@ -161,18 +217,20 @@ downcased, no preceding underscore.
 
 (global-set-key (kbd "C-c +") 'my-increment-number-decimal)
 
-;; Setup auto-complete
-(require 'auto-complete)
-(require 'auto-complete-config)
-(ac-config-default)
-(ac-set-trigger-key "TAB")
+;; ;; Setup auto-complete
+;; (require 'auto-complete)
+;; (require 'auto-complete-config)
+;; (ac-config-default)
+;; (ac-set-trigger-key "TAB")
 
-(require 'yaml-mode)
+(use-package yaml-mode
+  :ensure t
+  :mode "\\.sls\\'")
+(use-package markdown-mode
+  :ensure t)
 (add-to-list 'auto-mode-alist '("\\.ya?ml$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.sls$" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
-
-(require 'coffee-mode)
 
 ;; From http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
 (defun smarter-move-beginning-of-line (arg)
@@ -245,7 +303,10 @@ point reaches the beginning or end of the buffer, stop there."
 (add-hook 'diff-mode-hook 'turn-off-trailing-whitespace)
 (eval-after-load "diff-mode" '(diff-mode-font-lock-add-trailing-whitespace))
 
-(elpy-enable)
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
 
 (eval-after-load "linum"
   '(set-face-attribute 'linum nil :height 100))
@@ -264,21 +325,29 @@ point reaches the beginning or end of the buffer, stop there."
      (java-mode . "java")
      (awk-mode . "awk")
      (other . "gnu"))))
- '(coffee-tab-width 2)
  '(column-number-mode t)
- '(custom-enabled-themes (quote (adwaita)))
+ '(custom-enabled-themes '(deeper-blue))
  '(desktop-save-mode t)
  '(electric-indent-mode nil)
+ '(elpy-rpc-python-command "python3")
  '(fci-rule-color "#202325")
  '(global-linum-mode t)
+ '(gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(js-indent-level 2)
  '(mouse-drag-copy-region nil)
+ '(package-selected-packages
+   '(terraform-mode flycheck graphviz-dot-mode lsp-ui company-lsp hydra projectile lsp-java markdown-mode with-editor magit protobuf-mode go-mode desktop-save-mode elpy yaml-mode git-blamed git ensime use-package))
+ '(python-shell-interpreter "python3")
  '(read-quoted-char-radix 16)
  '(ruby-deep-indent-paren nil)
- '(safe-local-variable-values (quote ((encoding . utf-8))))
+ '(safe-local-variable-values '((encoding . utf-8)))
+ '(savehist-mode t)
  '(scroll-bar-mode nil)
+ '(select-enable-clipboard t)
+ '(select-enable-primary nil)
+ '(show-paren-mode t)
  '(show-trailing-whitespace t)
  '(tags-table-list (quote ("~/src/TAGS")))
  '(tool-bar-mode nil)
