@@ -73,6 +73,12 @@
 (use-package go-mode
   :ensure t)
 
+(use-package protobuf-mode
+  :ensure t
+  :mode "\\.proto\\'")
+
+(use-package graphql :ensure t)
+
 (use-package graphviz-dot-mode
   :ensure t)
 
