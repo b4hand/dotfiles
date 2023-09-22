@@ -49,6 +49,8 @@ export PATH=$HOME/bin:$PATH
 # added by travis gem
 [ -f /Users/brandon/.travis/travis.sh ] && source /Users/brandon/.travis/travis.sh
 
+export RIPGREP_CONFIG_PATH=$HOME/.ripgreprc
+
 alias b='bundle'
 alias bi='bundle install'
 alias be='bundle exec'
