@@ -105,11 +105,12 @@
   (set-frame-position (selected-frame) 0 0)
   (set-frame-size (selected-frame) 91 80))
 
-;; Use C++ mode even for .c and .h files since I rarely develop pure C
-;; code anymore.
-(push '("\\.[ch]\\'" . c++-mode) auto-mode-alist)
-
-(require 'cc-mode)
+(use-package cc-mode
+  :ensure t
+  :config
+  ;; Use C++ mode even for .c and .h files since I rarely develop pure
+  ;; C code anymore.
+  (push '("\\.[ch]\\'" . c++-mode) auto-mode-alist))
 
 ;; ;; Enable ggtags-mode for supported languages
 ;; (add-hook
