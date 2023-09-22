@@ -32,9 +32,10 @@
 ;; Always use cperl-mode instead of the standard perl-mode
 (defalias 'perl-mode 'cperl-mode)
 
-(use-package ensime
-  :ensure t
-  :pin melpa-stable)
+;; ensime is no longer available
+;; (use-package ensime
+;;   :ensure t
+;;   :pin melpa-stable)
 
 (use-package projectile :ensure t)
 (use-package yasnippet :ensure t)
