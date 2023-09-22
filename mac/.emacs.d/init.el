@@ -25,8 +25,6 @@
     (package-install 'use-package))
   (require 'use-package))
 
-(add-to-list 'load-path "/Users/brandon/.emacs.d/cc-mode-5.33")
-
 ;; Always use cperl-mode instead of the standard perl-mode
 (defalias 'perl-mode 'cperl-mode)
 
