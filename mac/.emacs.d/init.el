@@ -41,7 +41,15 @@
 (use-package yasnippet :ensure t)
 (use-package lsp-mode :ensure t)
 (use-package hydra :ensure t)
-(use-package company-lsp :ensure t)
+(use-package company
+  :ensure t
+  :bind (:map company-active-map
+         ("<tab>" . company-indent-or-complete-common)
+         ("M-n" . company-select-next)
+         ("M-p" . company-select-previous))
+  :config
+  (setq company-idle-delay 0.03)
+  (global-company-mode t))
 (use-package lsp-ui :ensure t)
 (use-package lsp-java :ensure t :after lsp
   :config (add-hook 'java-mode-hook 'lsp))
