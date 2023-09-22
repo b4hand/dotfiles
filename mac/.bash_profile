@@ -43,9 +43,6 @@ if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home/
 
-# Customize path to include a bunch of local utilities
-export PATH=$HOME/bin:$PATH
-
 # added by travis gem
 [ -f /Users/brandon/.travis/travis.sh ] && source /Users/brandon/.travis/travis.sh
 
@@ -59,3 +56,7 @@ alias po=popd
 
 # iTerm2 shell integration
 . $HOME/.iterm2_shell_integration.bash
+
+# Customize path to include a bunch of local utilities, ensuring these
+# always come first in PATH.
+export PATH=$HOME/bin:$PATH
