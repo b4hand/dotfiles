@@ -213,12 +213,11 @@ downcased, no preceding underscore.
 
 (use-package yaml-mode
   :ensure t
-  :mode "\\.sls\\'")
+  :mode "\\.sls\\'"
+  :mode "\\.ya?ml\\'")
 (use-package markdown-mode
-  :ensure t)
-(add-to-list 'auto-mode-alist '("\\.ya?ml$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.sls$" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
+  :ensure t
+  :mode "\\.md\\'")
 
 ;; From http://emacsredux.com/blog/2013/05/22/smarter-navigation-to-the-beginning-of-a-line/
 (defun smarter-move-beginning-of-line (arg)
