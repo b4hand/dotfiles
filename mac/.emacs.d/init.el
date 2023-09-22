@@ -292,7 +292,11 @@ point reaches the beginning or end of the buffer, stop there."
 
 (use-package elpy
   :ensure t
-  :init
+  :after flycheck
+  :config
+  (setq elpy-rpc-python-command "python3")
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode)
   (elpy-enable))
 
 (eval-after-load "linum"
