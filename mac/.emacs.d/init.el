@@ -25,6 +25,10 @@
     (package-install 'use-package))
   (require 'use-package))
 
+;; don't think this is actually letting the server work on Mac.
+(setq server-socket-dir "~/.emacs.d/server")
+;; (server-start)
+
 ;; Always use cperl-mode instead of the standard perl-mode
 (defalias 'perl-mode 'cperl-mode)
 
