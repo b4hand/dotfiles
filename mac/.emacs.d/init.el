@@ -119,37 +119,6 @@
 ;;    (when (derived-mode-p 'c-mode 'c++-mode 'java-mode 'python-mode 'ruby-mode)
 ;;      (ggtags-mode 1))))
 
-(defun un-camelcase-word-at-point ()
-  "un-camelcase the word at point, replacing uppercase chars with
-the lowercase version preceded by an underscore.
-The first char, if capitalized (eg, PascalCase) is just
-downcased, no preceding underscore.
-"
-  (interactive)
-  (save-excursion
-    (let ((bounds (bounds-of-thing-at-point 'word)))
-      (replace-regexp "\\([A-Z]\\)" "_\\1" nil
-                      (1+ (car bounds)) (cdr bounds))
-      (downcase-region (car bounds) (cdr bounds)))))
-
-(defun my-increment-number-decimal (&optional arg)
-  "Increment the number forward from point by 'arg'."
-  (interactive "p*")
-  (save-excursion
-    (save-match-data
-      (let (inc-by field-width answer)
-        (setq inc-by (if arg arg 1))
-        (skip-chars-backward "0123456789")
-        (when (re-search-forward "[0-9]+" nil t)
-          (setq field-width (- (match-end 0) (match-beginning 0)))
-          (setq answer (+ (string-to-number (match-string 0) 10) inc-by))
-          (when (< answer 0)
-            (setq answer (+ (expt 10 field-width) answer)))
-          (replace-match (format (concat "%0" (int-to-string field-width) "d")
-                                 answer)))))))
-
-(global-set-key (kbd "C-c +") 'my-increment-number-decimal)
-
 ;; Lines up cascaded method calls
 (defun my-java-lineup-cascaded-calls (langelem)
   (save-excursion
@@ -204,6 +173,37 @@ downcased, no preceding underscore.
     (progn
       (set-forehand-style)
       (setq c-basic-offset 2))))
+
+(defun un-camelcase-word-at-point ()
+  "un-camelcase the word at point, replacing uppercase chars with
+the lowercase version preceded by an underscore.
+The first char, if capitalized (eg, PascalCase) is just
+downcased, no preceding underscore.
+"
+  (interactive)
+  (save-excursion
+    (let ((bounds (bounds-of-thing-at-point 'word)))
+      (replace-regexp "\\([A-Z]\\)" "_\\1" nil
+                      (1+ (car bounds)) (cdr bounds))
+      (downcase-region (car bounds) (cdr bounds)))))
+
+(defun my-increment-number-decimal (&optional arg)
+  "Increment the number forward from point by 'arg'."
+  (interactive "p*")
+  (save-excursion
+    (save-match-data
+      (let (inc-by field-width answer)
+        (setq inc-by (if arg arg 1))
+        (skip-chars-backward "0123456789")
+        (when (re-search-forward "[0-9]+" nil t)
+          (setq field-width (- (match-end 0) (match-beginning 0)))
+          (setq answer (+ (string-to-number (match-string 0) 10) inc-by))
+          (when (< answer 0)
+            (setq answer (+ (expt 10 field-width) answer)))
+          (replace-match (format (concat "%0" (int-to-string field-width) "d")
+                                 answer)))))))
+
+(global-set-key (kbd "C-c +") 'my-increment-number-decimal)
 
 ;; ;; Setup auto-complete
 ;; (require 'auto-complete)
