@@ -95,6 +95,7 @@
 ;; accidentally.
 (global-unset-key (kbd "s-k"))
 
+;; add some easy to remember font zoom keys
 (global-set-key (kbd "s-+") 'text-scale-increase)
 (global-set-key (kbd "s--") 'text-scale-decrease)
 (global-set-key (kbd "s-0") 'text-scale-adjust)
