@@ -57,8 +57,9 @@
   :ensure t
   :init (global-flycheck-mode))
 
-(require 'ido)
-(ido-mode t)
+(use-package ido
+  :config
+  (ido-mode t))
 
 ;; -----------------------------------------------------------------------------
 ;; Git support
